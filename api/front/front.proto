@@ -1,0 +1,13 @@
+syntax = "proto3";
+package front;
+option go_package = "github.com/PxnPub/pxnMetrics/api/front";
+import "google/protobuf/empty.proto";
+
+
+service ServiceFrontendAPI {
+	rpc FetchStatusJSON (google.protobuf.Empty) returns (StatusJSON);
+}
+
+message StatusJSON {
+	bytes Data = 1;
+}

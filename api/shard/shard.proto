@@ -1,0 +1,50 @@
+syntax = "proto3";
+package shard;
+option go_package = "github.com/PxnPub/pxnMetrics/api/shard";
+import "google/protobuf/empty.proto";
+
+
+service ServiceShardAPI {
+	rpc Greet    (Hello    ) returns (Hey                  );
+	rpc SyncDBs  (SyncSend ) returns (SyncReply            );
+	rpc BatchOut (BatchData) returns (google.protobuf.Empty);
+}
+
+
+// Greet()
+message Hello {
+	uint32 ShardIndex = 1;
+}
+message Hey {
+	uint32 NumShards      = 1;
+	uint32 ChecksumBase   = 2;
+	string ListenInterval = 3;
+	string SyncInterval   = 4;
+	// token bucket
+	string TokenInterval  = 5;
+	uint32 TokensPerHit   = 6;
+	uint32 TokensThresh   = 7;
+	uint32 TokensCap      = 8;
+}
+
+
+// SyncDBs()
+message SyncSend {
+	uint32             ShardIndex   = 1;
+	map<string, int32> TokenBuckets = 2;
+	repeated uint64    ServerUIDs   = 3;
+}
+message SyncReply {
+	bool               NeedsBatch   = 1;
+	map<string, int32> TokenBuckets = 2;
+	repeated uint64    ServerUIDs   = 3;
+}
+
+
+// BatchOut()
+message BatchData {
+	uint32 ShardIndex = 1;
+	bool   IsLast     = 2;
+	// chip
+//TODO
+}

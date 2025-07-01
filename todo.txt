@@ -1,0 +1,24 @@
+
+
+
+
+
+TUI
+https://github.com/charmbracelet/bubbles
+https://github.com/NimbleMarkets/ntcharts
+
+
+
+add the database sync calls, and then batching
+
+what is the best way and place to store these simple databases, which are just maps in memory
+
+it will be requests per IP, and requests per server UID
+
+[1:50 AM]lorenzop: the shards will call to the broker every sync-interval. it will send and receive updates to the IP and UID databases, and check for a do-batch flag for that shard index. if it's true then the shard knows to perform a batchout and start accumulating data in a new chip
+[2:18 AM]lorenzop: I take a look at mcmetrics.net, oh I see they have a toxicity chart, how does that work?... oh, they send all chat messages back to their  proprietary servers.....
+
+
+
+
+

@@ -1,0 +1,21 @@
+---
+Bind-RPC:        "tcp://:9901"
+Checksum-Base:   9000
+Listen-Interval: "500ms"
+Sync-Interval:   "2s"
+Batch-Interval:  "20s"
+Rate-Limit:
+  Interval-Per-Token: "1s"
+  Tokens-Per-Hit:     5
+  Tokens-Thresh:      5000
+  Tokens-Cap:         9000
+Users:
+  lop:
+    Desc: "Local Dev"
+    Permit-IPs: [ "127.0.0.1", "192.168.3.3" ]
+    Permit-Web: true
+    Permit-Shards: [ 2, 5 ]
+  fed:
+    Desc: "Fedora"
+    Permit-IPs: [ "192.168.3.11" ]
+    Permit-Shards: [ 3 ]

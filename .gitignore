@@ -1,3 +1,9 @@
+broker/broker
+shard/shard
+frontend/frontend
+badge/badge
+testgen/testgen
+
 .git/
 .svn/
 .hg/
