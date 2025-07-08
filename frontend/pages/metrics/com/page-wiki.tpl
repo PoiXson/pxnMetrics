@@ -1,3 +1,6 @@
+{{define "PageBody"}}
+{{template "MenuTop" .}}
+
 pxnMetrics Wiki
 
 
@@ -22,14 +25,4 @@ pxnMetrics Wiki
 
 
 1. Each shard batches out at a set interval, in sequence.
-
-
-
-
-
-
-
-
-
-
-
+{{end}}

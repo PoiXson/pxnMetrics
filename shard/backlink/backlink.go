@@ -4,15 +4,16 @@ package backlink;
 import(
 	Log       "log"
 	Fmt       "fmt"
+	Net       "net"
 	Time      "time"
 	Math      "math"
 	Context   "context"
 	Errors    "errors"
 	GRPC      "google.golang.org/grpc"
 //	GZIP      "google.golang.org/grpc/encoding/gzip"
-	Utils     "github.com/PoiXson/pxnGoCommon/utils"
-	UtilsRPC  "github.com/PoiXson/pxnGoCommon/rpc"
-	Service   "github.com/PoiXson/pxnGoCommon/service"
+	PxnUtil   "github.com/PoiXson/pxnGoCommon/utils"
+	PxnRPC    "github.com/PoiXson/pxnGoCommon/rpc"
+	PxnServ   "github.com/PoiXson/pxnGoCommon/service"
 	Configs   "github.com/PoiXson/pxnMetrics/shard/configs"
 	API_Shard "github.com/PoiXson/pxnMetrics/api/shard"
 );
@@ -24,16 +25,16 @@ const InitialConnectTimeout = "5s";
 
 
 type BackLink struct {
-	service *Service.Service
+	service *PxnServ.Service
 	config  *Configs.CfgShard
-	rpc     *UtilsRPC.ClientRPC
+	rpc     *PxnRPC.ClientRPC
 	API     API_Shard.ServiceShardAPIClient
 }
 
 
 
-func New(service *Service.Service, config *Configs.CfgShard) *BackLink {
-	rpc := UtilsRPC.NewClientRPC(service, config.BrokerAddr);
+func New(service *PxnServ.Service, config *Configs.CfgShard) *BackLink {
+	rpc := PxnRPC.NewClientRPC(service, config.BrokerAddr);
 //TODO
 //	rpc.UseTLS = true;
 	return &BackLink{
@@ -46,7 +47,8 @@ func New(service *Service.Service, config *Configs.CfgShard) *BackLink {
 
 
 func (link *BackLink) Start() error {
-	if err := link.rpc.Start(); err != nil { return err; }
+	if err := link.rpc.Start(); err != nil {
+		return Fmt.Errorf("%s, in BackLink->Start()", err); }
 	link.API = API_Shard.NewServiceShardAPIClient(link.rpc.GetClientGRPC());
 	timeout, _ := Time.ParseDuration(InitialConnectTimeout);
 	ctx, cancel := Context.WithTimeout(Context.Background(), timeout);
@@ -56,7 +58,13 @@ func (link *BackLink) Start() error {
 		ShardIndex: uint32(link.config.ShardIndex),
 	};
 	hey, err := link.API.Greet(ctx, &hello, GRPC.WaitForReady(true));
-	if err != nil { return err; }
+	if err != nil {
+		if neterr, ok := err.(Net.Error); ok {
+			if neterr.Timeout() {
+				Errors.New("Initial connection to broker failed!"); }
+			return Fmt.Errorf("%s, in BackLink->Start()", err);
+		}
+	}
 	if hey == nil { return Errors.New("Received nil greet reply"); }
 	// num shards
 	if hey.NumShards < 1 || hey.NumShards > Math.MaxUint8 {
@@ -87,7 +95,7 @@ func (link *BackLink) Start() error {
 		link.config.ShardIndex,
 		link.config.NumShards,
 	);
-	Utils.SleepC();
+	PxnUtil.SleepC();
 	return nil;
 }
 

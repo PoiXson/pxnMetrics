@@ -2,33 +2,41 @@ package com;
 // pxnMetrics Frontend - wiki page
 
 import(
-	HTTP "net/http"
-	TPL  "html/template"
-	HTML "github.com/PoiXson/pxnGoCommon/utils/html"
+	HTTP   "net/http"
+	PxnWeb "github.com/PoiXson/pxnGoCommon/net/web"
 );
 
+import _ "embed";
 
 
-func (pages *Pages) PageWeb_Wiki(out HTTP.ResponseWriter, in *HTTP.Request) {
-	HTML.SetContentType(out, "html");
-	build := pages.GetBuilder();
-//TODO
-build.IsDev = true;
-	tpl, err := TPL.ParseFiles(
-		"html/main.tpl",
-	);
-	if err != nil { panic(err); }
-	vars := struct {
-		Page  string
-		Title string
-	}{
-		Page:  "wiki",
-		Title: "title",
+
+//go:embed page-wiki.tpl
+var TPL_Wiki []byte;
+
+
+
+type PageWiki struct {
+	Pages   *Pages
+	Builder *PxnWeb.Builder
+}
+
+
+
+func (pages *Pages) NewPageWiki() *PageWiki {
+	builder := pages.Builder.Clone().
+		AddRawTPL(TPL_Wiki);
+	return &PageWiki{
+		Pages:   pages,
+		Builder: builder,
 	};
-	out.Write([]byte(build.RenderTop()));
-	tpl.ExecuteTemplate(out, "main.tpl", vars);
-//TODO
-//	tpl.ExecuteTemplate(out, "wiki.tpl", vars);
-	out.Write([]byte("Wiki goes here"));
-	out.Write([]byte(build.RenderBottom()));
+}
+
+
+
+func (page *PageWiki) RenderWeb(out HTTP.ResponseWriter, in *HTTP.Request) {
+	out.Header().Set("Content-Type", PxnWeb.Mime_HTML);
+	tags := page.Builder.CloneTags();
+	tags["Page" ] = "wiki";
+	tags["Title"] = "pxnMetrics Wiki"
+	page.Builder.TPL.ExecuteTemplate(out, "website", tags);
 }

@@ -5,8 +5,18 @@ import "google/protobuf/empty.proto";
 
 
 service ServiceFrontendAPI {
+	rpc Greet           (Hello                ) returns (Hey       );
 	rpc FetchStatusJSON (google.protobuf.Empty) returns (StatusJSON);
 }
+
+
+// Greet()
+message Hello {
+}
+message Hey {
+	uint32 NumShards = 1;
+}
+
 
 message StatusJSON {
 	bytes Data = 1;

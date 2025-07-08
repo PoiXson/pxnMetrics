@@ -1,0 +1,15 @@
+syntax = "proto3";
+package badge;
+option go_package = "github.com/PxnPub/pxnMetrics/api/badge";
+
+
+service ServiceBadgeAPI {
+	rpc Greet (Hello) returns (Hey);
+}
+
+
+// Greet()
+message Hello {
+}
+message Hey {
+}

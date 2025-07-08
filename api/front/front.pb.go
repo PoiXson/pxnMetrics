@@ -22,6 +22,87 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Greet()
+type Hello struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Hello) Reset() {
+	*x = Hello{}
+	mi := &file_front_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Hello) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Hello) ProtoMessage() {}
+
+func (x *Hello) ProtoReflect() protoreflect.Message {
+	mi := &file_front_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Hello.ProtoReflect.Descriptor instead.
+func (*Hello) Descriptor() ([]byte, []int) {
+	return file_front_proto_rawDescGZIP(), []int{0}
+}
+
+type Hey struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	NumShards     uint32                 `protobuf:"varint,1,opt,name=NumShards,proto3" json:"NumShards,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Hey) Reset() {
+	*x = Hey{}
+	mi := &file_front_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Hey) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Hey) ProtoMessage() {}
+
+func (x *Hey) ProtoReflect() protoreflect.Message {
+	mi := &file_front_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Hey.ProtoReflect.Descriptor instead.
+func (*Hey) Descriptor() ([]byte, []int) {
+	return file_front_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Hey) GetNumShards() uint32 {
+	if x != nil {
+		return x.NumShards
+	}
+	return 0
+}
+
 type StatusJSON struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Data          []byte                 `protobuf:"bytes,1,opt,name=Data,proto3" json:"Data,omitempty"`
@@ -31,7 +112,7 @@ type StatusJSON struct {
 
 func (x *StatusJSON) Reset() {
 	*x = StatusJSON{}
-	mi := &file_front_proto_msgTypes[0]
+	mi := &file_front_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -43,7 +124,7 @@ func (x *StatusJSON) String() string {
 func (*StatusJSON) ProtoMessage() {}
 
 func (x *StatusJSON) ProtoReflect() protoreflect.Message {
-	mi := &file_front_proto_msgTypes[0]
+	mi := &file_front_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,7 +137,7 @@ func (x *StatusJSON) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StatusJSON.ProtoReflect.Descriptor instead.
 func (*StatusJSON) Descriptor() ([]byte, []int) {
-	return file_front_proto_rawDescGZIP(), []int{0}
+	return file_front_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *StatusJSON) GetData() []byte {
@@ -70,11 +151,16 @@ var File_front_proto protoreflect.FileDescriptor
 
 const file_front_proto_rawDesc = "" +
 	"\n" +
-	"\vfront.proto\x12\x05front\x1a\x1bgoogle/protobuf/empty.proto\" \n" +
+	"\vfront.proto\x12\x05front\x1a\x1bgoogle/protobuf/empty.proto\"\a\n" +
+	"\x05Hello\"#\n" +
+	"\x03Hey\x12\x1c\n" +
+	"\tNumShards\x18\x01 \x01(\rR\tNumShards\" \n" +
 	"\n" +
 	"StatusJSON\x12\x12\n" +
-	"\x04Data\x18\x01 \x01(\fR\x04Data2R\n" +
-	"\x12ServiceFrontendAPI\x12<\n" +
+	"\x04Data\x18\x01 \x01(\fR\x04Data2u\n" +
+	"\x12ServiceFrontendAPI\x12!\n" +
+	"\x05Greet\x12\f.front.Hello\x1a\n" +
+	".front.Hey\x12<\n" +
 	"\x0fFetchStatusJSON\x12\x16.google.protobuf.Empty\x1a\x11.front.StatusJSONB(Z&github.com/PxnPub/pxnMetrics/api/frontb\x06proto3"
 
 var (
@@ -89,16 +175,20 @@ func file_front_proto_rawDescGZIP() []byte {
 	return file_front_proto_rawDescData
 }
 
-var file_front_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_front_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_front_proto_goTypes = []any{
-	(*StatusJSON)(nil),    // 0: front.StatusJSON
-	(*emptypb.Empty)(nil), // 1: google.protobuf.Empty
+	(*Hello)(nil),         // 0: front.Hello
+	(*Hey)(nil),           // 1: front.Hey
+	(*StatusJSON)(nil),    // 2: front.StatusJSON
+	(*emptypb.Empty)(nil), // 3: google.protobuf.Empty
 }
 var file_front_proto_depIdxs = []int32{
-	1, // 0: front.ServiceFrontendAPI.FetchStatusJSON:input_type -> google.protobuf.Empty
-	0, // 1: front.ServiceFrontendAPI.FetchStatusJSON:output_type -> front.StatusJSON
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	0, // 0: front.ServiceFrontendAPI.Greet:input_type -> front.Hello
+	3, // 1: front.ServiceFrontendAPI.FetchStatusJSON:input_type -> google.protobuf.Empty
+	1, // 2: front.ServiceFrontendAPI.Greet:output_type -> front.Hey
+	2, // 3: front.ServiceFrontendAPI.FetchStatusJSON:output_type -> front.StatusJSON
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -115,7 +205,7 @@ func file_front_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_front_proto_rawDesc), len(file_front_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

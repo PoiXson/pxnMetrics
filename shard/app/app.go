@@ -8,8 +8,8 @@ import(
 	Math     "math"
 	Flag     "flag"
 	Flagz    "github.com/PoiXson/pxnGoCommon/utils/flagz"
-	UtilsFS  "github.com/PoiXson/pxnGoCommon/utils/fs"
-	Service  "github.com/PoiXson/pxnGoCommon/service"
+	PxnFS    "github.com/PoiXson/pxnGoCommon/utils/fs"
+	PxnServ  "github.com/PoiXson/pxnGoCommon/service"
 	BackLink "github.com/PoiXson/pxnMetrics/shard/backlink"
 	Worker   "github.com/PoiXson/pxnMetrics/shard/worker"
 	Configs  "github.com/PoiXson/pxnMetrics/shard/configs"
@@ -18,7 +18,7 @@ import(
 
 
 type AppShard struct {
-	service *Service.Service
+	service *PxnServ.Service
 	link    *BackLink.BackLink
 	worker  *Worker.Worker
 	config  *Configs.CfgShard
@@ -26,12 +26,12 @@ type AppShard struct {
 
 
 
-func New() Service.AppFace {
+func New() PxnServ.AppFace {
 	return &AppShard{};
 }
 
 func (app *AppShard) Main() {
-	app.service = Service.New();
+	app.service = PxnServ.New();
 	app.service.Start();
 	app.flags_and_configs(DefaultConfigFile);
 	// rpc
@@ -55,7 +55,7 @@ func (app *AppShard) flags_and_configs(file string) {
 	Flagz.Int   (&flag_shardindex, "shard-index", -1);
 	Flag.Parse();
 	// load config
-	cfg, err := UtilsFS.LoadConfig[Configs.CfgShard](file);
+	cfg, err := PxnFS.LoadConfig[Configs.CfgShard](file);
 	if err != nil { Log.Panicf("%s, when loading config %s", err, file); }
 	// remote rpc
 	if flag_broker    != "" { cfg.BrokerAddr = flag_broker;          }

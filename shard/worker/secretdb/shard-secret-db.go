@@ -5,8 +5,8 @@ import(
 	Log     "log"
 	Time    "time"
 	Sync    "sync"
-	PxnNet  "github.com/PoiXson/pxnGoCommon/utils/net"
-	RateLim "github.com/PoiXson/pxnGoCommon/utils/net/ratelimit"
+	PxnNet  "github.com/PoiXson/pxnGoCommon/net"
+	RateLim "github.com/PoiXson/pxnGoCommon/net/ratelimit"
 	Configs "github.com/PoiXson/pxnMetrics/shard/configs"
 );
 

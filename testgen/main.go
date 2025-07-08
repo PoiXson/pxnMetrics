@@ -10,7 +10,7 @@ import(
 	Adler   "hash/adler32"
 	StrConv "strconv"
 	JSON    "encoding/json"
-	UID     "github.com/PoiXson/pxnGoCommon/utils/uid"
+	PxnUID  "github.com/PoiXson/pxnGoCommon/utils/uid"
 	APIv1   "github.com/PoiXson/pxnMetrics/api/submit_v1"
 );
 
@@ -63,7 +63,7 @@ func (tool *Tool) Ticker() {
 }
 
 func (tool *Tool) Run() {
-	uid := UID.New(0);
+	uid := PxnUID.New(0);
 	addr, err := Net.ResolveUDPAddr("udp", Address)
 	if err != nil { panic(err); }
 	conn, err := Net.DialUDP("udp", nil, addr);

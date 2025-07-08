@@ -10,10 +10,9 @@ import(
 	Errors    "errors"
 	GRPC      "google.golang.org/grpc"
 	GEmpty    "google.golang.org/protobuf/types/known/emptypb"
-	UtilsRPC  "github.com/PoiXson/pxnGoCommon/rpc"
+	PxnRPC    "github.com/PoiXson/pxnGoCommon/rpc"
 	Configs   "github.com/PoiXson/pxnMetrics/broker/configs"
 	Heart     "github.com/PoiXson/pxnMetrics/broker/heart"
-	UserMan   "github.com/PoiXson/pxnMetrics/broker/userman"
 	API_Front "github.com/PoiXson/pxnMetrics/api/front"
 	API_Web   "github.com/PoiXson/pxnMetrics/api/web"
 );
@@ -42,12 +41,12 @@ func NewFrontAPI(rpc *GRPC.Server, config *Configs.CfgBroker,
 
 func (api *BrokerFrontAPI) FetchStatusJSON(ctx Context.Context,
 		_ *GEmpty.Empty) (*API_Front.StatusJSON, error) {
-	username := ctx.Value(UtilsRPC.KeyUsername).(string);
+	username := ctx.Value(PxnRPC.KeyUsername).(string);
 	if username == "" {
 		Log.Printf("Invalid RPC user");
 		return nil, Errors.New("Invalid RPC user");
 	}
-	user, ok := ctx.Value(UserMan.KeyUserRPC).(*Configs.CfgUser);
+	user, ok := ctx.Value(KeyUserRPC).(*Configs.CfgUser);
 	if !ok {
 		Log.Printf("Invalid RPC User type");
 		return nil, Errors.New("Invalid RPC User type");

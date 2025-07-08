@@ -8,9 +8,9 @@ import(
 	Time     "time"
 	Sync     "sync"
 	Atomic   "sync/atomic"
-	Utils    "github.com/PoiXson/pxnGoCommon/utils"
-	PxnNet   "github.com/PoiXson/pxnGoCommon/utils/net"
-	Service  "github.com/PoiXson/pxnGoCommon/service"
+	PxnUtil  "github.com/PoiXson/pxnGoCommon/utils"
+	PxnNet   "github.com/PoiXson/pxnGoCommon/net"
+	PxnServ  "github.com/PoiXson/pxnGoCommon/service"
 	Configs  "github.com/PoiXson/pxnMetrics/shard/configs"
 	BackLink "github.com/PoiXson/pxnMetrics/shard/backlink"
 	SecretDB "github.com/PoiXson/pxnMetrics/shard/worker/secretdb"
@@ -21,7 +21,7 @@ import(
 type Worker struct {
 	mut_state    Sync.Mutex
 	mut_update   Sync.Mutex
-	service      *Service.Service
+	service      *PxnServ.Service
 	config       *Configs.CfgShard
 	link         *BackLink.BackLink
 	listen       *Net.UDPConn
@@ -38,7 +38,7 @@ type Worker struct {
 
 
 
-func New(service *Service.Service, config *Configs.CfgShard,
+func New(service *PxnServ.Service, config *Configs.CfgShard,
 		backlink *BackLink.BackLink) *Worker {
 	return &Worker{
 		service: service,
@@ -65,7 +65,7 @@ func (worker *Worker) Start() error {
 	if err != nil { return err; }
 	worker.listen = listen;
 	go worker.Serve();
-	Utils.SleepC();
+	PxnUtil.SleepC();
 	return nil;
 }
 
@@ -120,13 +120,19 @@ func (worker *Worker) Serve() {
 			// timeout
 			if neterr, ok := err.(Net.Error); ok && neterr.Timeout() {
 				continue LOOP_WORKER; }
+
+
+
+
+
+
 			if neterr, ok := err.(*Net.OpError); ok &&
 			neterr.Err.Error() == "use of closed network connection" {
 				Log.Printf("[Shard-%d] Socket closed!", shard_index);
 				break LOOP_WORKER; }
 			Fmt.Printf("Unknown UDP listen error: %v", err);
 			worker.PacketsError.Add(1);
-			Utils.SleepX();
+			PxnUtil.SleepX();
 			continue LOOP_WORKER;
 		}
 	}

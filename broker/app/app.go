@@ -8,8 +8,8 @@ import(
 	Math    "math"
 	Flag    "flag"
 	Flagz   "github.com/PoiXson/pxnGoCommon/utils/flagz"
-	UtilsFS "github.com/PoiXson/pxnGoCommon/utils/fs"
-	Service "github.com/PoiXson/pxnGoCommon/service"
+	PxnFS   "github.com/PoiXson/pxnGoCommon/utils/fs"
+	PxnServ "github.com/PoiXson/pxnGoCommon/service"
 	Configs "github.com/PoiXson/pxnMetrics/broker/configs"
 	Heart   "github.com/PoiXson/pxnMetrics/broker/heart"
 	UpLink  "github.com/PoiXson/pxnMetrics/broker/uplink"
@@ -18,7 +18,7 @@ import(
 
 
 type AppBroker struct {
-	service *Service.Service
+	service *PxnServ.Service
 	heart   *Heart.HeartBeat
 	link    *UpLink.UpLink
 	config  *Configs.CfgBroker
@@ -26,12 +26,12 @@ type AppBroker struct {
 
 
 
-func New() Service.AppFace {
+func New() PxnServ.AppFace {
 	return &AppBroker{};
 }
 
 func (app *AppBroker) Main() {
-	app.service = Service.New();
+	app.service = PxnServ.New();
 	app.service.Start();
 	app.flags_and_configs(DefaultConfigFile);
 	// databases
@@ -69,7 +69,7 @@ func (app *AppBroker) flags_and_configs(file string) {
 	Flagz.String(&flag_interval_batch, "batch-interval", "");
 	Flag.Parse();
 	// load config
-	cfg, err := UtilsFS.LoadConfig[Configs.CfgBroker](file);
+	cfg, err := PxnFS.LoadConfig[Configs.CfgBroker](file);
 	if err != nil { Log.Panicf("%s, when loading config %s", err, file); }
 	// bind rpc
 	if flag_bind   != "" { cfg.BindRPC = flag_bind;      }

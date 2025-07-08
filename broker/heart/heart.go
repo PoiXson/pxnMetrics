@@ -5,8 +5,8 @@ import(
 	Log      "log"
 	Time     "time"
 	Sync     "sync"
-	Utils    "github.com/PoiXson/pxnGoCommon/utils"
-	Service  "github.com/PoiXson/pxnGoCommon/service"
+	PxnUtil  "github.com/PoiXson/pxnGoCommon/utils"
+	PxnServ  "github.com/PoiXson/pxnGoCommon/service"
 	Configs  "github.com/PoiXson/pxnMetrics/broker/configs"
 	SecretDB "github.com/PoiXson/pxnMetrics/broker/databases/secret"
 );
@@ -20,7 +20,7 @@ const TaskQueueSize      = 1024;
 
 
 type HeartBeat struct {
-	Service   *Service.Service
+	Service   *PxnServ.Service
 	Config    *Configs.CfgBroker
 //TODO: nothing adds to the queue yet
 	TaskQueue chan Task
@@ -47,7 +47,7 @@ type ShardState struct {
 
 
 
-func New(service *Service.Service, config *Configs.CfgBroker) *HeartBeat {
+func New(service *PxnServ.Service, config *Configs.CfgBroker) *HeartBeat {
 	num_shards := config.NumShards;
 	shards := make([]*ShardState, num_shards);
 	for index:=uint8(0); index<num_shards; index++ {
@@ -65,7 +65,7 @@ func New(service *Service.Service, config *Configs.CfgBroker) *HeartBeat {
 
 func (heart *HeartBeat) Start() error {
 	go heart.Serve();
-	Utils.SleepC();
+	PxnUtil.SleepC();
 	return nil;
 }
 

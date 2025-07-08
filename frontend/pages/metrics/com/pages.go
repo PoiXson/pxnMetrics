@@ -2,45 +2,54 @@ package com;
 // minecraftmetrics.com
 
 import(
-	TPL     "html/template"
 	Gorilla "github.com/gorilla/mux"
-	HTML    "github.com/PoiXson/pxnGoCommon/utils/html"
-	PxnNet  "github.com/PoiXson/pxnGoCommon/utils/net"
+	PxnWeb  "github.com/PoiXson/pxnGoCommon/net/web"
 	WebLink "github.com/PoiXson/pxnMetrics/frontend/weblink"
 );
+
+import _ "embed";
+
+
+
+//go:embed menu-top.tpl
+var TPL_MenuTop []byte;
 
 
 
 type Pages struct {
-	link *WebLink.WebLink
-	tpl_status *TPL.Template
+	Link       *WebLink.WebLink
+	Builder    *PxnWeb.Builder
+	PageStatus *PageStatus
+	PageGlobal *PageGlobal
+	PageWiki   *PageWiki
+	PageAbout  *PageAbout
 }
 
 
 
 func New(weblink *WebLink.WebLink, router *Gorilla.Router) *Pages {
-	pages := Pages{
-		link: weblink,
-	};
-	PxnNet.AddStaticRoute(router);
-	router.HandleFunc("/",            pages.PageWeb_Global);
-	router.HandleFunc("/wiki/",       pages.PageWeb_Wiki  );
-	router.HandleFunc("/status/",     pages.PageWeb_Status);
-	router.HandleFunc("/api/status/", pages.PageAPI_Status);
-	router.HandleFunc("/about/",      pages.PageWeb_About );
-	router.HandleFunc("/favicon.ico", PxnNet.NewRedirect("/static/line-chart.ico"));
-	pages.PageInit_Status();
-	return &pages;
-}
-
-
-
-func (pages *Pages) GetBuilder() *HTML.Builder {
-	return HTML.NewBuilder().
+	builder := PxnWeb.NewBuilder().
+		WithIncludes().
 		WithBootstrap().
-		WithBootstrapIcons().
-		WithBootstrapTooltips().
-		SetFavIcon("/static/line-chart.ico").
-		AddCSS("/static/metrics.css").
-		SetTitle("pxnMetrics");
+		WithBootsIcons().
+		WithTooltips().
+		AddRawTPL(TPL_MenuTop).
+		SetTitle("pxnMetrics").
+		AddFileCSS("/static/metrics.css").
+		SetFavIcon("/static/line-chart.ico");
+	pages := Pages{
+		Link:    weblink,
+		Builder: builder,
+	};
+	pages.PageStatus = pages.NewPageStatus();
+	pages.PageGlobal = pages.NewPageGlobal();
+	pages.PageWiki   = pages.NewPageWiki();
+	pages.PageAbout  = pages.NewPageAbout();
+	PxnWeb.AddStaticRoute(router);
+	router.HandleFunc("/",            pages.PageGlobal.RenderWeb);
+	router.HandleFunc("/status/",     pages.PageStatus.RenderWeb);
+	router.HandleFunc("/api/status/", pages.PageStatus.RenderAPI);
+	router.HandleFunc("/wiki/",       pages.PageWiki  .RenderWeb);
+	router.HandleFunc("/about/",      pages.PageAbout .RenderWeb);
+	return &pages;
 }

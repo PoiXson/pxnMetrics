@@ -2,65 +2,56 @@ package com;
 // pxnMetrics Frontend - status page
 
 import(
-	Fmt     "fmt"
-	HTTP    "net/http"
-	Context "context"
-	Runtime "runtime"
-	TPL     "html/template"
-	GEmpty  "google.golang.org/protobuf/types/known/emptypb"
-	HTML    "github.com/PoiXson/pxnGoCommon/utils/html"
+	HTTP   "net/http"
+	PxnWeb "github.com/PoiXson/pxnGoCommon/net/web"
 );
-//TODO
-//	GRPC     "google.golang.org/grpc"
-//	GZIP     "google.golang.org/grpc/encoding/gzip"
-//	FrontAPI "github.com/PoiXson/pxnMetrics/api/front"
+
+import _ "embed";
 
 
 
-func (pages *Pages) PageInit_Status() {
-	pages.tpl_status = TPL.Must(TPL.ParseFiles(
-		"html/main.tpl",
-		"html/pages/status.tpl",
-	));
+//go:embed page-status.tpl
+var TPL_Status []byte;
+
+
+
+type PageStatus struct {
+	Pages   *Pages
+	Builder *PxnWeb.Builder
 }
 
-func (pages *Pages) PageWeb_Status(out HTTP.ResponseWriter, in *HTTP.Request) {
-	HTML.SetContentType(out, "html");
-	build := pages.GetBuilder().
-		AddBotJS("/static/status.js");
-	vars := struct {
-		Page  string
-		Title string
-	}{
-		Page:  "status",
-		Title: "title",
+
+
+func (pages *Pages) NewPageStatus() *PageStatus {
+	builder := pages.Builder.Clone().
+		AddRawTPL(TPL_Status);
+	return &PageStatus{
+		Pages:   pages,
+		Builder: builder,
 	};
-	out.Write([]byte(build.RenderTop()));
-	pages.tpl_status.ExecuteTemplate(out, "main.tpl",   vars);
-	pages.tpl_status.ExecuteTemplate(out, "status.tpl", vars);
-	out.Write([]byte(build.RenderBottom()));
 }
 
 
 
-func (pages *Pages) PageAPI_Status(out HTTP.ResponseWriter, in *HTTP.Request) {
-	reply, err := pages.link.API.FetchStatusJSON(
-		Context.Background(),
-		&GEmpty.Empty{},
-	);
-//TODO: make this into a function?
-	if err != nil {
-		trace := make([]byte, 1024);
-		n := Runtime.Stack(trace, true);
-		HTTP.Error(out,
-			Fmt.Sprintf("%s\n%s", err.Error(), trace[:n]),
-			HTTP.StatusInternalServerError,
-		);
-		return;
-	}
-//TODO: optional? only when not unix socket?
-//		GRPC.UseCompressor(GZIP.Name),
-	HTML.SetContentType(out, "json");
-	out.WriteHeader(HTTP.StatusOK);
-	out.Write(reply.Data);
+func (page *PageStatus) RenderWeb(out HTTP.ResponseWriter, in *HTTP.Request) {
+	out.Header().Set("Content-Type", PxnWeb.Mime_HTML);
+	tags := page.Builder.CloneTags();
+	tags["Page" ] = "status";
+	tags["Title"] = "pxnMetrics Status"
+	page.Builder.TPL.ExecuteTemplate(out, "website", tags);
+}
+
+
+
+func (page *PageStatus) RenderAPI(out HTTP.ResponseWriter, in *HTTP.Request) {
+	out.Header().Set("Content-Type", PxnWeb.Mime_JSON);
+//	shards := make([]API.JSON_StatusShard, heart.NumShards);
+//	for index:=uint8(0); index<heart.NumShards; index++ {
+
+
+
+
+//	}
+
+
 }

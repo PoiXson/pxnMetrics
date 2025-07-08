@@ -2,41 +2,48 @@ package com;
 // pxnMetrics Frontend - global metrics page
 
 import(
-	HTTP "net/http"
-	TPL  "html/template"
-	HTML "github.com/PoiXson/pxnGoCommon/utils/html"
+	HTTP   "net/http"
+	PxnWeb "github.com/PoiXson/pxnGoCommon/net/web"
 );
 
+import _ "embed";
 
 
-func (pages *Pages) PageWeb_Global(out HTTP.ResponseWriter, in *HTTP.Request) {
-	HTML.SetContentType(out, "html");
-	build := pages.GetBuilder();
-//TODO
-build.IsDev = true;
-	tpl, err := TPL.ParseFiles(
-		"html/main.tpl",
-		"html/pages/global.tpl",
-	);
-	if err != nil { panic(err); }
-	vars := struct {
-		Page  string
-		Title string
-	}{
-		Page:  "global",
-		Title: "title",
-	};
-	out.Write([]byte(build.RenderTop()));
-	tpl.ExecuteTemplate(out, "main.tpl", vars);
-	tpl.ExecuteTemplate(out, "global.tpl", vars);
-	out.Write([]byte(build.RenderBottom()));
+
+//go:embed page-global.tpl
+var TPL_Global []byte;
+
+
+
+type PageGlobal struct {
+	Pages   *Pages
+	Builder *PxnWeb.Builder
 }
 
 
 
-func (pages *Pages) PageAPI_Global(out HTTP.ResponseWriter, in *HTTP.Request) {
-	HTML.SetContentType(out, "json");
-//	url, err := URL.ParseQuery(in.URL.RawQuery);
-//	if err != nil { panic(err); }
+func (pages *Pages) NewPageGlobal() *PageGlobal {
+	builder := pages.Builder.Clone().
+		AddRawTPL(TPL_Global);
+	return &PageGlobal{
+		Pages:   pages,
+		Builder: builder,
+	};
+}
+
+
+
+func (page *PageGlobal) RenderWeb(out HTTP.ResponseWriter, in *HTTP.Request) {
+	out.Header().Set("Content-Type", PxnWeb.Mime_HTML);
+	tags := page.Builder.CloneTags();
+	tags["Page" ] = "global";
+	tags["Title"] = "Global Metrics"
+	page.Builder.TPL.ExecuteTemplate(out, "website", tags);
+}
+
+
+
+func (page *PageGlobal) RenderAPI(out HTTP.ResponseWriter, in *HTTP.Request) {
+	out.Header().Set("Content-Type", PxnWeb.Mime_JSON);
 	out.Write([]byte("{}"));
 }

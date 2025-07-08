@@ -1,4 +1,4 @@
-package userman;
+package uplink;
 // pxnMetrics Broker - rpc user manager
 
 import(
@@ -6,7 +6,7 @@ import(
 	GRPC     "google.golang.org/grpc"
 	GStatus  "google.golang.org/grpc/status"
 	GCodes   "google.golang.org/grpc/codes"
-	UtilsRPC "github.com/PoiXson/pxnGoCommon/rpc"
+	PxnRPC   "github.com/PoiXson/pxnGoCommon/rpc"
 	Configs  "github.com/PoiXson/pxnMetrics/broker/configs"
 );
 
@@ -19,7 +19,7 @@ const KeyUserRPC = "user-rpc";
 func NewUserManagerInterceptor(config *Configs.CfgBroker) GRPC.UnaryServerInterceptor {
 	return func(ctx Context.Context, req any, info *GRPC.UnaryServerInfo,
 			handler GRPC.UnaryHandler) (any, error) {
-		username, ok := ctx.Value(UtilsRPC.KeyUsername).(string);
+		username, ok := ctx.Value(PxnRPC.KeyUsername).(string);
 		if !ok || username == "" {
 			return nil, GStatus.Errorf(
 				GCodes.PermissionDenied,

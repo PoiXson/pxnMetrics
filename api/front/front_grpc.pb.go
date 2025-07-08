@@ -20,6 +20,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	ServiceFrontendAPI_Greet_FullMethodName           = "/front.ServiceFrontendAPI/Greet"
 	ServiceFrontendAPI_FetchStatusJSON_FullMethodName = "/front.ServiceFrontendAPI/FetchStatusJSON"
 )
 
@@ -27,6 +28,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ServiceFrontendAPIClient interface {
+	Greet(ctx context.Context, in *Hello, opts ...grpc.CallOption) (*Hey, error)
 	FetchStatusJSON(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*StatusJSON, error)
 }
 
@@ -36,6 +38,16 @@ type serviceFrontendAPIClient struct {
 
 func NewServiceFrontendAPIClient(cc grpc.ClientConnInterface) ServiceFrontendAPIClient {
 	return &serviceFrontendAPIClient{cc}
+}
+
+func (c *serviceFrontendAPIClient) Greet(ctx context.Context, in *Hello, opts ...grpc.CallOption) (*Hey, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Hey)
+	err := c.cc.Invoke(ctx, ServiceFrontendAPI_Greet_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *serviceFrontendAPIClient) FetchStatusJSON(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*StatusJSON, error) {
@@ -52,6 +64,7 @@ func (c *serviceFrontendAPIClient) FetchStatusJSON(ctx context.Context, in *empt
 // All implementations must embed UnimplementedServiceFrontendAPIServer
 // for forward compatibility.
 type ServiceFrontendAPIServer interface {
+	Greet(context.Context, *Hello) (*Hey, error)
 	FetchStatusJSON(context.Context, *emptypb.Empty) (*StatusJSON, error)
 	mustEmbedUnimplementedServiceFrontendAPIServer()
 }
@@ -63,6 +76,9 @@ type ServiceFrontendAPIServer interface {
 // pointer dereference when methods are called.
 type UnimplementedServiceFrontendAPIServer struct{}
 
+func (UnimplementedServiceFrontendAPIServer) Greet(context.Context, *Hello) (*Hey, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Greet not implemented")
+}
 func (UnimplementedServiceFrontendAPIServer) FetchStatusJSON(context.Context, *emptypb.Empty) (*StatusJSON, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchStatusJSON not implemented")
 }
@@ -85,6 +101,24 @@ func RegisterServiceFrontendAPIServer(s grpc.ServiceRegistrar, srv ServiceFronte
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&ServiceFrontendAPI_ServiceDesc, srv)
+}
+
+func _ServiceFrontendAPI_Greet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Hello)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServiceFrontendAPIServer).Greet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ServiceFrontendAPI_Greet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServiceFrontendAPIServer).Greet(ctx, req.(*Hello))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _ServiceFrontendAPI_FetchStatusJSON_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -112,6 +146,10 @@ var ServiceFrontendAPI_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "front.ServiceFrontendAPI",
 	HandlerType: (*ServiceFrontendAPIServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Greet",
+			Handler:    _ServiceFrontendAPI_Greet_Handler,
+		},
 		{
 			MethodName: "FetchStatusJSON",
 			Handler:    _ServiceFrontendAPI_FetchStatusJSON_Handler,

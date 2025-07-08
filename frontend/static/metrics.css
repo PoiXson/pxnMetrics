@@ -18,6 +18,7 @@ body {
 
 
 .navbar-nav .nav-item {
+	white-space: nowrap;
 	transition: background-color 0.3s, box-shadow 1s;
 	border-radius: 0.6rem;
 	margin-left:  3px;
@@ -64,6 +65,36 @@ body {
 #broker-offline-warning {
 	text-align: center;
 }
+
+
+
+.container-text-block {
+	max-width: 650px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: black;
+	border-radius: 15px;
+	background-color: white;
+	filter: drop-shadow(2px 2px 6px #555555);
+}
+
+/*
+.about-foot-link i {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #aaa;
+	border-radius:  4px;
+	padding-top:    5px;
+	padding-bottom: 5px;
+	padding-left:   8px;
+	padding-right:  8px;
+	filter: drop-shadow(1px 1px 1px #000000);
+	background-color: #bec6db;
+}
+.about-foot-link a {
+	text-decoration: none;
+}
+*/
 
 
 

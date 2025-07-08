@@ -2,32 +2,41 @@ package com;
 // pxnMetrics Frontend - about page
 
 import(
-	HTTP "net/http"
-	TPL  "html/template"
-	HTML "github.com/PoiXson/pxnGoCommon/utils/html"
+	HTTP   "net/http"
+	PxnWeb "github.com/PoiXson/pxnGoCommon/net/web"
 );
 
+import _ "embed";
 
 
-func (pages *Pages) PageWeb_About(out HTTP.ResponseWriter, in *HTTP.Request) {
-	HTML.SetContentType(out, "html");
-	build := pages.GetBuilder();
-//TODO
-build.IsDev = true;
-	tpl, err := TPL.ParseFiles(
-		"html/main.tpl",
-	);
-	if err != nil { panic(err); }
-	vars := struct {
-		Page  string
-		Title string
-	}{
-		Page:  "About",
-		Title: "title",
+
+//go:embed page-about.tpl
+var TPL_About []byte;
+
+
+
+type PageAbout struct {
+	Pages   *Pages
+	Builder *PxnWeb.Builder
+}
+
+
+
+func (pages *Pages) NewPageAbout() *PageAbout {
+	builder := pages.Builder.Clone().
+		AddRawTPL(TPL_About);
+	return &PageAbout{
+		Pages:   pages,
+		Builder: builder,
 	};
-	out.Write([]byte(build.RenderTop()));
-	tpl.ExecuteTemplate(out, "main.tpl", vars);
-//	tpl.ExecuteTemplate(out, "about.tpl", vars);
-	out.Write([]byte("About Page goes here"));
-	out.Write([]byte(build.RenderBottom()));
+}
+
+
+
+func (page *PageAbout) RenderWeb(out HTTP.ResponseWriter, in *HTTP.Request) {
+	out.Header().Set("Content-Type", PxnWeb.Mime_HTML);
+	tags := page.Builder.CloneTags();
+	tags["Page" ] = "about";
+	tags["Title"] = "About pxnMetrics"
+	page.Builder.TPL.ExecuteTemplate(out, "website", tags);
 }

@@ -2,39 +2,30 @@ package top;
 // minecraftmetrics.top
 
 import(
-//	TPL     "html/template"
-	Gorilla "github.com/gorilla/mux"
-	HTML    "github.com/PoiXson/pxnGoCommon/utils/html"
-	PxnNet  "github.com/PoiXson/pxnGoCommon/utils/net"
-	WebLink "github.com/PoiXson/pxnMetrics/frontend/weblink"
+	Gorilla  "github.com/gorilla/mux"
+	PxnWeb   "github.com/PoiXson/pxnGoCommon/net/web"
+	WebLink  "github.com/PoiXson/pxnMetrics/frontend/weblink"
+	PagesCom "github.com/PoiXson/pxnMetrics/frontend/pages/metrics/com"
 );
 
 
 
 type Pages struct {
-	link *WebLink.WebLink
-//	tpl_status *TPL.Template
+	Link    *WebLink.WebLink
+	Builder *PxnWeb.Builder
+	PageTop *PageTop
 }
 
 
 
 func New(weblink *WebLink.WebLink, router *Gorilla.Router) *Pages {
 	pages := Pages{
-		link: weblink,
+		Link: weblink,
+		Builder: PxnWeb.NewBuilder().
+			AddRawTPL(PagesCom.TPL_MenuTop),
 	};
-	PxnNet.AddStaticRoute(router);
-	router.HandleFunc("/favicon.ico", PxnNet.NewRedirect("/static/line-chart.ico"));
+	pages.PageTop = pages.NewPageTop();
+	PxnWeb.AddStaticRoute(router);
+	router.HandleFunc("/", pages.PageTop.RenderWeb);
 	return &pages;
-}
-
-
-
-func (pages *Pages) GetBuilder() *HTML.Builder {
-	return HTML.NewBuilder().
-		WithBootstrap().
-		WithBootstrapIcons().
-		WithBootstrapTooltips().
-		SetFavIcon("/static/line-chart.ico").
-		AddCSS("/static/metrics.css").
-		SetTitle("pxnMetrics");
 }

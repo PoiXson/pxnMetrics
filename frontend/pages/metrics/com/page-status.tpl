@@ -1,5 +1,6 @@
+{{define "PageBody"}}
+{{template "MenuTop" .}}
 
-{{define "page-content"}}
 <!-- Broker Offline -->
 <div id="broker-offline-alert" class="alert alert-danger fade show" style="display: none;" role="alert">
 	<h2>
